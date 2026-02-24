@@ -1,7 +1,8 @@
 """Workspace state management."""
 
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Optional
 
 from ..artifacts.models import (
     ActionItem,
@@ -17,19 +18,17 @@ if TYPE_CHECKING:
     from ..agents.base import BaseAgent
 
 
-@dataclass
 class WorkspaceState:
     """Current state of the workspace."""
 
-    active_initiatives: list[Initiative] = field(default_factory=list)
-    active_meetings: list[MeetingLog] = field(default_factory=list)
-    pending_decisions: list[Decision] = field(default_factory=list)
-    open_action_items: list[ActionItem] = field(default_factory=list)
-    agents: dict[str, "BaseAgent"] = field(default_factory=dict)
-
-    def __init__(self, store: ArtifactStore | None = None):
+    def __init__(self, store: Optional[ArtifactStore] = None):
         self.store = store or ArtifactStore()
         self.decision_registry = DecisionRegistry(self.store)
+        self.active_initiatives: list[Initiative] = []
+        self.active_meetings: list[MeetingLog] = []
+        self.pending_decisions: list[Decision] = []
+        self.open_action_items: list[ActionItem] = []
+        self.agents: dict[str, "BaseAgent"] = {}
         self._load_state()
 
     def _load_state(self) -> None:
@@ -49,7 +48,7 @@ class WorkspaceState:
         """Register an agent in the workspace."""
         self.agents[agent.id] = agent
 
-    def get_agent(self, agent_id: str) -> "BaseAgent" | None:
+    def get_agent(self, agent_id: str) -> Optional["BaseAgent"]:
         """Get an agent by ID."""
         return self.agents.get(agent_id)
 
@@ -62,7 +61,7 @@ class WorkspaceState:
         self.active_initiatives.append(initiative)
         self.store.save("initiative", initiative.id, initiative)
 
-    def get_initiative(self, initiative_id: str) -> Initiative | None:
+    def get_initiative(self, initiative_id: str) -> Optional[Initiative]:
         """Get an initiative by ID."""
         for i in self.active_initiatives:
             if i.id == initiative_id:
