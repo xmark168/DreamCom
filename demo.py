@@ -11,18 +11,18 @@ import asyncio
 import os
 from datetime import datetime
 
-from src.deamcompan.core.agents.bod import BoardOfDirectors
-from src.deamcompan.core.agents.ceo import CEOOrchestrator
-from src.deamcompan.core.agents.experts.engineering import EngineeringExpert
-from src.deamcompan.core.agents.experts.product import ProductExpert
-from src.deamcompan.core.agents.experts.strategy import StrategyExpert
-from src.deamcompan.core.artifacts.models import Initiative
-from src.deamcompan.core.artifacts.registry import DecisionRegistry
-from src.deamcompan.core.artifacts.store import ArtifactStore
-from src.deamcompan.core.llm.factory import LLMClientFactory
-from src.deamcompan.core.meetings.engine import MeetingEngine
-from src.deamcompan.core.meetings.types import MeetingType
-from src.deamcompan.core.workspace.state import WorkspaceState
+from deamcompan.core.agents.bod import BoardOfDirectors
+from deamcompan.core.agents.ceo import CEOOrchestrator
+from deamcompan.core.agents.experts.engineering import EngineeringExpert
+from deamcompan.core.agents.experts.product import ProductExpert
+from deamcompan.core.agents.experts.strategy import StrategyExpert
+from deamcompan.core.artifacts.models import Initiative
+from deamcompan.core.artifacts.registry import DecisionRegistry
+from deamcompan.core.artifacts.store import ArtifactStore
+from deamcompan.core.llm.factory import LLMClientFactory
+from deamcompan.core.meetings.engine import MeetingEngine
+from deamcompan.core.meetings.types import MeetingType
+from deamcompan.core.workspace.state import WorkspaceState
 
 
 async def main():
@@ -199,7 +199,7 @@ async def main():
     print("=" * 60)
     print()
     print("Next steps:")
-    print("  1. Start the API server: uvicorn src.deamcompan.api.main:app --reload")
+    print("  1. Start the API server: uvicorn deamcompan.api.main:app --reload")
     print("  2. Open the UI: http://localhost:8000")
     print("  3. Create more agents and run meetings")
     print()

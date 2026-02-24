@@ -66,7 +66,7 @@ async def health_check():
 
 # Serve static files for UI
 try:
-    app.mount("/", StaticFiles(directory="./ui/dist", html=True), name="ui")
+    app.mount("/", StaticFiles(directory="./ui", html=True), name="ui")
 except RuntimeError:
     # UI not built yet
     pass
