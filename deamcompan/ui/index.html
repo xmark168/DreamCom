@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeamCompan - Virtual Company Workspace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            color: #444;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #5a6fd6;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .agent-list {
+            list-style: none;
+        }
+
+        .agent-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .agent-role {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-right: 12px;
+        }
+
+        .meeting-item {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .meeting-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .meeting-meta {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DeamCompan</h1>
+            <p>Virtual Company Workspace - AI-Powered Organization</p>
+        </header>
+
+        <div class="grid">
+            <!-- Metrics Card -->
+            <div class="card">
+                <h2>Workspace Metrics</h2>
+                <div id="metrics">
+                    <div class="loading">Loading metrics...</div>
+                </div>
+            </div>
+
+            <!-- Agents Card -->
+            <div class="card">
+                <h2>Agents</h2>
+                <div id="agents">
+                    <div class="loading">Loading agents...</div>
+                </div>
+                <div class="actions">
+                    <button class="btn" onclick="showCreateAgent()">Create Agent</button>
+                </div>
+            </div>
+
+            <!-- Meetings Card -->
+            <div class="card">
+                <h2>Meetings</h2>
+                <div id="meetings">
+                    <div class="loading">Loading meetings...</div>
+                </div>
+                <div class="actions">
+                    <button class="btn" onclick="showCreateMeeting()">Schedule Meeting</button>
+                </div>
+            </div>
+
+            <!-- Decisions Card -->
+            <div class="card">
+                <h2>Decisions</h2>
+                <div id="decisions">
+                    <div class="loading">Loading decisions...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Agent Modal -->
+    <div id="createAgentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+        <div style="background:white; max-width:500px; margin:100px auto; padding:30px; border-radius:12px;">
+            <h2>Create New Agent</h2>
+            <div class="form-group">
+                <label>Role</label>
+                <select id="agentRole">
+                    <option value="BOD">Board of Directors</option>
+                    <option value="CEO">CEO</option>
+                    <option value="Strategy">Strategy Expert</option>
+                    <option value="Product">Product Expert</option>
+                    <option value="Engineering">Engineering Expert</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Name (optional)</label>
+                <input type="text" id="agentName" placeholder="Agent name">
+            </div>
+            <div class="form-group">
+                <label>LLM Provider</label>
+                <select id="agentProvider">
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                </select>
+            </div>
+            <div class="actions">
+                <button class="btn" onclick="createAgent()">Create</button>
+                <button class="btn btn-secondary" onclick="hideCreateAgent()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Meeting Modal -->
+    <div id="createMeetingModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+        <div style="background:white; max-width:500px; margin:100px auto; padding:30px; border-radius:12px;">
+            <h2>Schedule Meeting</h2>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="meetingTitle" placeholder="Meeting title">
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <select id="meetingType">
+                    <option value="executive_review">Executive Review</option>
+                    <option value="board_review">Board Review</option>
+                    <option value="decision_meeting">Decision Meeting</option>
+                    <option value="team_checkin">Team Check-in</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Agenda (one per line)</label>
+                <textarea id="meetingAgenda" placeholder="Agenda items..."></textarea>
+            </div>
+            <div class="actions">
+                <button class="btn" onclick="createMeeting()">Schedule</button>
+                <button class="btn btn-secondary" onclick="hideCreateMeeting()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // Load all data
+        async function loadData() {
+            await Promise.all([
+                loadMetrics(),
+                loadAgents(),
+                loadMeetings(),
+                loadDecisions()
+            ]);
+        }
+
+        // Load metrics
+        async function loadMetrics() {
+            try {
+                const res = await fetch(`${API_BASE}/workspace/metrics`);
+                const data = await res.json();
+                renderMetrics(data);
+            } catch (e) {
+                document.getElementById('metrics').innerHTML = `<div class="error">Error loading metrics</div>`;
+            }
+        }
+
+        function renderMetrics(data) {
+            const html = `
+                <div class="metric">
+                    <span>Active Agents</span>
+                    <span class="metric-value">${data.agents || 0}</span>
+                </div>
+                <div class="metric">
+                    <span>Active Initiatives</span>
+                    <span class="metric-value">${data.active_initiatives || 0}</span>
+                </div>
+                <div class="metric">
+                    <span>Total Meetings</span>
+                    <span class="metric-value">${data.total_meetings || 0}</span>
+                </div>
+                <div class="metric">
+                    <span>Pending Decisions</span>
+                    <span class="metric-value">${data.pending_decisions || 0}</span>
+                </div>
+                <div class="metric">
+                    <span>Open Action Items</span>
+                    <span class="metric-value">${data.open_action_items || 0}</span>
+                </div>
+            `;
+            document.getElementById('metrics').innerHTML = html;
+        }
+
+        // Load agents
+        async function loadAgents() {
+            try {
+                const res = await fetch(`${API_BASE}/agents/list`);
+                const data = await res.json();
+                renderAgents(data);
+            } catch (e) {
+                document.getElementById('agents').innerHTML = `<div class="error">Error loading agents</div>`;
+            }
+        }
+
+        function renderAgents(agents) {
+            if (!agents || agents.length === 0) {
+                document.getElementById('agents').innerHTML = `<div class="empty-state">No agents yet. Create one to get started.</div>`;
+                return;
+            }
+
+            const html = `<ul class="agent-list">` +
+                agents.map(a => `
+                    <li class="agent-item">
+                        <span class="agent-role">${a.role}</span>
+                        <span>${a.name}</span>
+                    </li>
+                `).join('') +
+                `</ul>`;
+            document.getElementById('agents').innerHTML = html;
+        }
+
+        // Load meetings
+        async function loadMeetings() {
+            try {
+                const res = await fetch(`${API_BASE}/meetings/list`);
+                const data = await res.json();
+                renderMeetings(data);
+            } catch (e) {
+                document.getElementById('meetings').innerHTML = `<div class="error">Error loading meetings</div>`;
+            }
+        }
+
+        function renderMeetings(meetings) {
+            if (!meetings || meetings.length === 0) {
+                document.getElementById('meetings').innerHTML = `<div class="empty-state">No meetings yet. Schedule one to get started.</div>`;
+                return;
+            }
+
+            const html = meetings.slice(0, 5).map(m => {
+                const statusClass = m.completed_at ? 'status-completed' : 'status-active';
+                const statusText = m.completed_at ? 'Completed' : 'Active';
+                return `
+                    <div class="meeting-item">
+                        <div class="meeting-title">${m.title}</div>
+                        <div class="meeting-meta">
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                            ${m.meeting_type}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('meetings').innerHTML = html;
+        }
+
+        // Load decisions
+        async function loadDecisions() {
+            try {
+                const res = await fetch(`${API_BASE}/artifacts/decisions`);
+                const data = await res.json();
+                renderDecisions(data);
+            } catch (e) {
+                document.getElementById('decisions').innerHTML = `<div class="error">Error loading decisions</div>`;
+            }
+        }
+
+        function renderDecisions(decisions) {
+            if (!decisions || decisions.length === 0) {
+                document.getElementById('decisions').innerHTML = `<div class="empty-state">No decisions yet.</div>`;
+                return;
+            }
+
+            const html = decisions.slice(0, 5).map(d => {
+                const statusClass = d.status === 'approved' ? 'status-completed' :
+                                   d.status === 'proposed' ? 'status-pending' : 'status-active';
+                return `
+                    <div class="meeting-item">
+                        <div class="meeting-title">${d.title}</div>
+                        <div class="meeting-meta">
+                            <span class="status-badge ${statusClass}">${d.status}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('decisions').innerHTML = html;
+        }
+
+        // Modal functions
+        function showCreateAgent() {
+            document.getElementById('createAgentModal').style.display = 'block';
+        }
+
+        function hideCreateAgent() {
+            document.getElementById('createAgentModal').style.display = 'none';
+        }
+
+        function showCreateMeeting() {
+            document.getElementById('createMeetingModal').style.display = 'block';
+        }
+
+        function hideCreateMeeting() {
+            document.getElementById('createMeetingModal').style.display = 'none';
+        }
+
+        // Create agent
+        async function createAgent() {
+            const role = document.getElementById('agentRole').value;
+            const name = document.getElementById('agentName').value;
+            const provider = document.getElementById('agentProvider').value;
+
+            try {
+                const res = await fetch(`${API_BASE}/agents/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role, name, provider })
+                });
+
+                if (res.ok) {
+                    hideCreateAgent();
+                    loadAgents();
+                } else {
+                    alert('Error creating agent');
+                }
+            } catch (e) {
+                alert('Error creating agent');
+            }
+        }
+
+        // Create meeting
+        async function createMeeting() {
+            const title = document.getElementById('meetingTitle').value;
+            const meeting_type = document.getElementById('meetingType').value;
+            const agendaText = document.getElementById('meetingAgenda').value;
+            const agenda = agendaText.split('\n').filter(line => line.trim());
+
+            // Get available agents for participants
+            try {
+                const agentsRes = await fetch(`${API_BASE}/agents/list`);
+                const agents = await agentsRes.json();
+                const participant_ids = agents.map(a => a.id);
+
+                const res = await fetch(`${API_BASE}/meetings/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, meeting_type, agenda, participant_ids })
+                });
+
+                if (res.ok) {
+                    const meeting = await res.json();
+                    hideCreateMeeting();
+                    // Run the meeting
+                    await fetch(`${API_BASE}/meetings/${meeting.meeting_id}/run`, { method: 'POST' });
+                    loadMeetings();
+                    loadDecisions();
+                } else {
+                    alert('Error creating meeting');
+                }
+            } catch (e) {
+                alert('Error creating meeting');
+            }
+        }
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
