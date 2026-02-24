@@ -1,6 +1,9 @@
 # Factory
 .factory/
 
+# Environment variables
+.env
+
 # Python
 __pycache__/
 *.py[cod]

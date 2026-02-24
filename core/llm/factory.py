@@ -1,10 +1,27 @@
 """Factory for creating LLM clients."""
 
 import os
+from typing import Optional
 
 from .base import LLMClient
 from .providers.anthropic_client import AnthropicClient
 from .providers.openai_client import OpenAIClient
+
+
+# Load environment variables from .env file if exists
+try:
+    from pathlib import Path
+    env_path = Path(".env")
+    if env_path.exists():
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
+                    if key not in os.environ:
+                        os.environ[key] = value
+except Exception:
+    pass  # Silently fail if .env cannot be read
 
 
 class LLMClientFactory:
@@ -13,18 +30,19 @@ class LLMClientFactory:
     @staticmethod
     def create(
         provider: str,
-        model: str | None = None,
-        api_key: str | None = None,
+        model: Optional[str] = None,
+        api_key: Optional[str] = None,
     ) -> LLMClient:
         """Create an LLM client for the specified provider."""
         provider = provider.lower()
 
         if provider == "openai":
-            model = model or "gpt-4o"
+            model = model or os.getenv("DEFAULT_MODEL", "gpt-4o")
             api_key = api_key or os.getenv("OPENAI_API_KEY")
+            base_url = os.getenv("OPENAI_BASE_URL")
             if not api_key:
                 raise ValueError("OpenAI API key required. Set OPENAI_API_KEY env var.")
-            return OpenAIClient(model=model, api_key=api_key)
+            return OpenAIClient(model=model, api_key=api_key, base_url=base_url)
 
         elif provider == "anthropic":
             model = model or "claude-3-5-sonnet-20241022"

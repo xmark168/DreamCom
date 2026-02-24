@@ -10,9 +10,9 @@ from core.llm.base import LLMClient, LLMMessage, LLMResponse
 class OpenAIClient(LLMClient):
     """OpenAI API client."""
 
-    def __init__(self, model: str = "gpt-4o", api_key: str | None = None):
+    def __init__(self, model: str = "gpt-4o", api_key: str | None = None, base_url: str | None = None):
         super().__init__(model, api_key)
-        self.client = AsyncOpenAI(api_key=api_key)
+        self.client = AsyncOpenAI(api_key=api_key, base_url=base_url)
 
     async def complete(
         self,
