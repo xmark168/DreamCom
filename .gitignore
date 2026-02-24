@@ -47,5 +47,9 @@ Thumbs.db
 demo_workspace/
 workspace/
 
+# Provider configs (contains API keys)
+providers.json
+~/.config/deamcompan/
+
 # Logs
 *.log

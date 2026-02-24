@@ -1,9 +1,13 @@
-"""Factory for creating LLM clients."""
+"""Factory for creating LLM clients.
+
+Deprecated: Use MultiClient instead for multi-provider support.
+"""
 
 import os
 from typing import Optional
 
 from .base import LLMClient
+from .multi_client import MultiClient
 from .providers.anthropic_client import AnthropicClient
 from .providers.openai_client import OpenAIClient
 
@@ -25,7 +29,10 @@ except Exception:
 
 
 class LLMClientFactory:
-    """Factory to create appropriate LLM client based on provider."""
+    """Factory to create appropriate LLM client based on provider.
+    
+    Deprecated: Use MultiClient for multi-provider support with auto-switch.
+    """
 
     @staticmethod
     def create(
@@ -53,3 +60,8 @@ class LLMClientFactory:
 
         else:
             raise ValueError(f"Unknown provider: {provider}. Supported: openai, anthropic")
+
+    @staticmethod
+    def create_multi_client() -> MultiClient:
+        """Create a MultiClient with auto-switch support."""
+        return MultiClient()

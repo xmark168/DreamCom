@@ -23,7 +23,7 @@ from core.agents.experts.strategy import StrategyExpert
 from core.artifacts.models import Initiative
 from core.artifacts.registry import DecisionRegistry
 from core.artifacts.store import ArtifactStore
-from core.llm.factory import LLMClientFactory
+from core.llm.multi_client import MultiClient, MultiClientError
 from core.meetings.engine import MeetingEngine
 from core.meetings.types import MeetingType
 from core.workspace.state import WorkspaceState
@@ -36,40 +36,25 @@ async def main():
     print("=" * 60)
     print()
 
-    # Check for API keys
-    api_key = os.getenv("OPENAI_API_KEY")
-    base_url = os.getenv("OPENAI_BASE_URL")
+    # Initialize multi-client
+    print("🔌 Initializing LLM providers...")
+    multi_client = MultiClient()
+    providers = multi_client.get_available_providers()
     
-    if not api_key:
-        print("⚠️  Warning: OPENAI_API_KEY not found in .env file!")
-        print("Demo will run in 'mock mode' without actual LLM calls.")
-        print()
-        use_mock = True
-    elif api_key == "proxypal-local" and not base_url:
-        print("⚠️  Warning: ProxyPal key found but OPENAI_BASE_URL not set!")
-        print("Demo will run in 'mock mode' without actual LLM calls.")
-        print()
-        use_mock = True
-    elif api_key == "proxypal-local":
-        print(f"🔌 Using ProxyPal (Kimi) at {base_url}")
-        print(f"🤖 Model: {os.getenv('DEFAULT_MODEL', 'kimi-k2.5')}")
-        print()
-        use_mock = False
-    else:
-        print("🔑 Using OpenAI API")
-        print()
-        use_mock = False
-        print("⚠️  Warning: No API keys found!")
-        print("Set OPENAI_API_KEY or ANTHROPIC_API_KEY environment variable.")
+    if not providers:
+        print("⚠️  Warning: No LLM providers configured!")
         print("Demo will run in 'mock mode' without actual LLM calls.")
         print()
         use_mock = True
     else:
+        print(f"📋 Available providers:")
+        for p in providers:
+            status = "✅" if p.enabled else "❌"
+            print(f"   {status} {p.name} (priority: {p.priority})")
+        print()
         use_mock = False
-
-    if not use_mock:
         print("⚠️  This will make actual LLM calls and may take a few minutes.")
-        print("    Press Ctrl+C to cancel and run in mock mode instead.")
+        print("    Auto-switch will try alternative providers on failure.")
         print()
 
     # Initialize storage
@@ -92,15 +77,12 @@ async def main():
         product = ProductExpert(None, "Product Expert")
         engineering = EngineeringExpert(None, "Engineering Expert")
     else:
-        # Create agents with LLM
-        provider = "openai"
-        llm_client = LLMClientFactory.create(provider)
-
-        bod = BoardOfDirectors(llm_client, "Board of Directors")
-        ceo = CEOOrchestrator(llm_client, "CEO")
-        strategy = StrategyExpert(llm_client, "Strategy Expert")
-        product = ProductExpert(llm_client, "Product Expert")
-        engineering = EngineeringExpert(llm_client, "Engineering Expert")
+        # Create agents with MultiClient (auto-switch support)
+        bod = BoardOfDirectors(multi_client, "Board of Directors")
+        ceo = CEOOrchestrator(multi_client, "CEO")
+        strategy = StrategyExpert(multi_client, "Strategy Expert")
+        product = ProductExpert(multi_client, "Product Expert")
+        engineering = EngineeringExpert(multi_client, "Engineering Expert")
 
     # Register agents in workspace
     workspace.register_agent(bod)
@@ -197,27 +179,14 @@ async def main():
                 print(f"Action items: {len(actions)}")
                 for a in actions:
                     print(f"  - {a['description'][:60]}... (Owner: {a['owner']})")
+        except MultiClientError as e:
+            print(f"❌ All providers failed:")
+            for provider, error in e.errors.items():
+                print(f"   - {provider}: {error[:80]}")
+            print("   The meeting simulation was incomplete.")
         except Exception as e:
             print(f"❌ Error during meeting: {e}")
             print("   The meeting simulation was incomplete.")
-
-        print("Phase 1: Async Preparation Complete")
-        print()
-        print("Phase 2: Synchronous Decision Complete")
-        print()
-
-        if "decision_results" in result:
-            decisions = result["decision_results"].get("decisions", [])
-            actions = result["decision_results"].get("action_items", [])
-
-            print(f"Decisions made: {len(decisions)}")
-            for d in decisions:
-                print(f"  - {d['description'][:80]}...")
-
-            print()
-            print(f"Action items: {len(actions)}")
-            for a in actions:
-                print(f"  - {a['description'][:60]}... (Owner: {a['owner']})")
 
     print("-" * 60)
     print("✅ Meeting completed")
