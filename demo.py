@@ -11,18 +11,18 @@ import asyncio
 import os
 from datetime import datetime
 
-from deamcompan.core.agents.bod import BoardOfDirectors
-from deamcompan.core.agents.ceo import CEOOrchestrator
-from deamcompan.core.agents.experts.engineering import EngineeringExpert
-from deamcompan.core.agents.experts.product import ProductExpert
-from deamcompan.core.agents.experts.strategy import StrategyExpert
-from deamcompan.core.artifacts.models import Initiative
-from deamcompan.core.artifacts.registry import DecisionRegistry
-from deamcompan.core.artifacts.store import ArtifactStore
-from deamcompan.core.llm.factory import LLMClientFactory
-from deamcompan.core.meetings.engine import MeetingEngine
-from deamcompan.core.meetings.types import MeetingType
-from deamcompan.core.workspace.state import WorkspaceState
+from core.agents.bod import BoardOfDirectors
+from core.agents.ceo import CEOOrchestrator
+from core.agents.experts.engineering import EngineeringExpert
+from core.agents.experts.product import ProductExpert
+from core.agents.experts.strategy import StrategyExpert
+from core.artifacts.models import Initiative
+from core.artifacts.registry import DecisionRegistry
+from core.artifacts.store import ArtifactStore
+from core.llm.factory import LLMClientFactory
+from core.meetings.engine import MeetingEngine
+from core.meetings.types import MeetingType
+from core.workspace.state import WorkspaceState
 
 
 async def main():
@@ -199,7 +199,7 @@ async def main():
     print("=" * 60)
     print()
     print("Next steps:")
-    print("  1. Start the API server: uvicorn deamcompan.api.main:app --reload")
+    print("  1. Start the API server: uvicorn api.main:app --reload")
     print("  2. Open the UI: http://localhost:8000")
     print("  3. Create more agents and run meetings")
     print()

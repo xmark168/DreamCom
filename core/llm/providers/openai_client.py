@@ -4,7 +4,7 @@ from typing import Any, AsyncIterator
 
 from openai import AsyncOpenAI
 
-from ..base import LLMClient, LLMMessage, LLMResponse
+from core.llm.base import LLMClient, LLMMessage, LLMResponse
 
 
 class OpenAIClient(LLMClient):

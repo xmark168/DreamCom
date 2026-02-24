@@ -2,9 +2,9 @@
 
 import uuid
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
-from ..artifacts.models import (
+from core.artifacts.models import (
     ActionItem,
     ActionItemStatus,
     Decision,
@@ -13,12 +13,12 @@ from ..artifacts.models import (
     MeetingPhase as ModelMeetingPhase,
     MeetingType as ModelMeetingType,
 )
-from ..artifacts.store import ArtifactStore
-from .phases import AsyncPrepPhase, SyncDecisionPhase
-from .types import MeetingPhase, MeetingStatus, MeetingType
+from core.artifacts.store import ArtifactStore
+from core.meetings.phases import AsyncPrepPhase, SyncDecisionPhase
+from core.meetings.types import MeetingPhase, MeetingStatus, MeetingType
 
 if TYPE_CHECKING:
-    from ..agents.base import BaseAgent
+    from core.agents.base import BaseAgent
 
 
 @dataclass
@@ -37,8 +37,8 @@ class MeetingContext:
 class MeetingEngine:
     """Engine for running meetings."""
 
-    def __init__(self, store: ArtifactStore | None = None):
-        self.store = store or ArtifactStore()
+    def __init__(self, store: Optional[ArtifactStore] = None):
+        self.store: ArtifactStore = store or ArtifactStore()
         self.active_meetings: dict[str, MeetingContext] = {}
 
     async def create_meeting(
@@ -159,7 +159,7 @@ class MeetingEngine:
         )
         return summary
 
-    def get_meeting(self, meeting_id: str) -> MeetingContext | None:
+    def get_meeting(self, meeting_id: str) -> Optional[MeetingContext]:
         """Get a meeting context by ID."""
         return self.active_meetings.get(meeting_id)
 

@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from ..base import BaseAgent
+from core.agents.base import BaseAgent
 
 
 ENGINEERING_SYSTEM_PROMPT = """You are an Engineering Expert in a virtual company.

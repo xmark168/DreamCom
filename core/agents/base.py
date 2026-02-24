@@ -4,8 +4,8 @@ import uuid
 from abc import ABC, abstractmethod
 from typing import Any
 
-from ..artifacts.models import AgentThought
-from ..llm.base import LLMClient, LLMMessage
+from core.artifacts.models import AgentThought
+from core.llm.base import LLMClient, LLMMessage
 
 
 class BaseAgent(ABC):

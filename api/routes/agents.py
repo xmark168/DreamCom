@@ -3,13 +3,13 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from ...core.agents.bod import BoardOfDirectors
-from ...core.agents.ceo import CEOOrchestrator
-from ...core.agents.experts.engineering import EngineeringExpert
-from ...core.agents.experts.product import ProductExpert
-from ...core.agents.experts.strategy import StrategyExpert
-from ...core.llm.factory import LLMClientFactory
-from ..main import workspace
+from core.agents.bod import BoardOfDirectors
+from core.agents.ceo import CEOOrchestrator
+from core.agents.experts.engineering import EngineeringExpert
+from core.agents.experts.product import ProductExpert
+from core.agents.experts.strategy import StrategyExpert
+from core.llm.factory import LLMClientFactory
+from api.main import workspace
 
 router = APIRouter()
 

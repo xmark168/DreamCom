@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter, HTTPException
 
-from ...core.artifacts.models import ActionItem, Decision, Initiative, MeetingLog
-from ..main import registry, store
+from core.artifacts.models import ActionItem, Decision, Initiative, MeetingLog
+from api.main import registry, store
 
 router = APIRouter()
 
@@ -27,7 +27,7 @@ async def get_decision(decision_id: str):
 @router.post("/decisions/{decision_id}/approve")
 async def approve_decision(decision_id: str, approved_by: str = "user"):
     """Approve a decision."""
-    from ...core.artifacts.models import DecisionStatus
+    from core.artifacts.models import DecisionStatus
 
     decision = registry.update_status(decision_id, DecisionStatus.APPROVED, approved_by)
     if not decision:

@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from ..main import workspace
+from api.main import workspace
 
 router = APIRouter()
 

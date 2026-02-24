@@ -3,7 +3,7 @@
 import uuid
 from typing import TYPE_CHECKING, Any
 
-from ..artifacts.models import AgentThought
+from core.artifacts.models import AgentThought
 from .types import MeetingPhase
 
 if TYPE_CHECKING:

@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from ..base import BaseAgent
+from core.agents.base import BaseAgent
 
 
 STRATEGY_SYSTEM_PROMPT = """You are a Strategy Expert in a virtual company.

@@ -3,10 +3,10 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from ...core.meetings.engine import MeetingEngine
-from ...core.meetings.types import MeetingType
-from ..main import workspace
-from .agents import _agent_registry
+from core.meetings.engine import MeetingEngine
+from core.meetings.types import MeetingType
+from api.main import workspace
+from api.routes.agents import _agent_registry
 
 router = APIRouter()
 
@@ -16,7 +16,7 @@ _meeting_engine: MeetingEngine | None = None
 def _get_engine() -> MeetingEngine:
     global _meeting_engine
     if _meeting_engine is None:
-        from ..main import store
+        from api.main import store
         _meeting_engine = MeetingEngine(store)
     return _meeting_engine
 
@@ -81,8 +81,8 @@ async def run_meeting(meeting_id: str):
 @router.get("/{meeting_id}")
 async def get_meeting(meeting_id: str):
     """Get meeting details."""
-    from ...core.artifacts.models import MeetingLog
-    from ..main import store
+    from core.artifacts.models import MeetingLog
+    from api.main import store
 
     meeting = store.load("meeting", meeting_id, MeetingLog)
     if not meeting:
@@ -94,8 +94,8 @@ async def get_meeting(meeting_id: str):
 @router.get("/list")
 async def list_meetings():
     """List all meetings."""
-    from ...core.artifacts.models import MeetingLog
-    from ..main import store
+    from core.artifacts.models import MeetingLog
+    from api.main import store
 
     meetings = store.list_all("meeting", MeetingLog)
     return [m.model_dump() for m in meetings]

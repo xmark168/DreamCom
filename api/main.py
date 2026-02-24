@@ -7,10 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from ..core.artifacts.registry import DecisionRegistry
-from ..core.artifacts.store import ArtifactStore
-from ..core.workspace.state import WorkspaceState
-from .routes import agents, artifacts, meetings, workspace
+from core.artifacts.registry import DecisionRegistry
+from core.artifacts.store import ArtifactStore
+from core.workspace.state import WorkspaceState
+from api.routes import agents, artifacts, meetings, workspace
 
 
 # Global state (initialized on startup)
