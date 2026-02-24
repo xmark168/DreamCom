@@ -11,6 +11,10 @@ import asyncio
 import os
 from datetime import datetime
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
+
 from core.agents.bod import BoardOfDirectors
 from core.agents.ceo import CEOOrchestrator
 from core.agents.experts.engineering import EngineeringExpert
@@ -33,7 +37,28 @@ async def main():
     print()
 
     # Check for API keys
-    if not os.getenv("OPENAI_API_KEY") and not os.getenv("ANTHROPIC_API_KEY"):
+    api_key = os.getenv("OPENAI_API_KEY")
+    base_url = os.getenv("OPENAI_BASE_URL")
+    
+    if not api_key:
+        print("⚠️  Warning: OPENAI_API_KEY not found in .env file!")
+        print("Demo will run in 'mock mode' without actual LLM calls.")
+        print()
+        use_mock = True
+    elif api_key == "proxypal-local" and not base_url:
+        print("⚠️  Warning: ProxyPal key found but OPENAI_BASE_URL not set!")
+        print("Demo will run in 'mock mode' without actual LLM calls.")
+        print()
+        use_mock = True
+    elif api_key == "proxypal-local":
+        print(f"🔌 Using ProxyPal (Kimi) at {base_url}")
+        print(f"🤖 Model: {os.getenv('DEFAULT_MODEL', 'kimi-k2.5')}")
+        print()
+        use_mock = False
+    else:
+        print("🔑 Using OpenAI API")
+        print()
+        use_mock = False
         print("⚠️  Warning: No API keys found!")
         print("Set OPENAI_API_KEY or ANTHROPIC_API_KEY environment variable.")
         print("Demo will run in 'mock mode' without actual LLM calls.")
@@ -41,6 +66,11 @@ async def main():
         use_mock = True
     else:
         use_mock = False
+
+    if not use_mock:
+        print("⚠️  This will make actual LLM calls and may take a few minutes.")
+        print("    Press Ctrl+C to cancel and run in mock mode instead.")
+        print()
 
     # Initialize storage
     print("📁 Initializing workspace...")
@@ -63,7 +93,7 @@ async def main():
         engineering = EngineeringExpert(None, "Engineering Expert")
     else:
         # Create agents with LLM
-        provider = "openai" if os.getenv("OPENAI_API_KEY") else "anthropic"
+        provider = "openai"
         llm_client = LLMClientFactory.create(provider)
 
         bod = BoardOfDirectors(llm_client, "Board of Directors")
@@ -144,8 +174,32 @@ async def main():
         print()
     else:
         # Run actual meeting with LLM
-        print("Running meeting with LLM (this may take a minute)...")
-        result = await meeting_engine.run_meeting(meeting.meeting_id)
+        print("🤖 Running meeting with LLM...")
+        print("   (This may take 2-3 minutes depending on model speed)")
+        print()
+        try:
+            result = await meeting_engine.run_meeting(meeting.meeting_id)
+
+            print("Phase 1: Async Preparation Complete ✅")
+            print()
+            print("Phase 2: Synchronous Decision Complete ✅")
+            print()
+
+            if "decision_results" in result:
+                decisions = result["decision_results"].get("decisions", [])
+                actions = result["decision_results"].get("action_items", [])
+
+                print(f"Decisions made: {len(decisions)}")
+                for d in decisions:
+                    print(f"  - {d['description'][:80]}...")
+
+                print()
+                print(f"Action items: {len(actions)}")
+                for a in actions:
+                    print(f"  - {a['description'][:60]}... (Owner: {a['owner']})")
+        except Exception as e:
+            print(f"❌ Error during meeting: {e}")
+            print("   The meeting simulation was incomplete.")
 
         print("Phase 1: Async Preparation Complete")
         print()
